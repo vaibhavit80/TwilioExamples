@@ -775,7 +775,7 @@ function connectClientWithUsername(usernameText,token) {
 function fetchAccessToken(token, handler) {
    debugger;
    const params = getUrlParams();
- // fetch(`https://apiprod.iconnections.io/f4f/activemeetingroomparticipants/${params.meetingguid}`)
+  //fetch(`https://apiprod.iconnections.io/f4f/activemeetingroomparticipants/${params.meetingguid}`)
  fetch(`https://apiprod.iconnections.io/f4f/meetingcontact/${params.contactguid}/${params.meetingguid}`)
    .then(async (response) => {
        var tt = await response.json();
@@ -800,6 +800,9 @@ function connectMessagingClient(token) {
     tc.messagingClient.on('channelAdded', $.throttle(tc.loadChannelList));
     tc.messagingClient.on('channelRemoved', $.throttle(tc.loadChannelList));
     tc.messagingClient.on('tokenExpired', refreshToken);
+  }).catch((error) => {
+    debugger;
+    console.error("Chat Connection error = "+JSON.stringify(error));
   });
 }catch(ex){
   debugger;

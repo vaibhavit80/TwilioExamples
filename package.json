@@ -34,8 +34,8 @@
   "dependencies": {
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
-    "camelcase": "^6.0.0",
     "bootstrap-icons": "^1.0.0-alpha3",
+    "camelcase": "^6.0.0",
     "chance": "^1.1.6",
     "countimer": "^1.1.0",
     "dotenv": "^4.0.0",
@@ -43,8 +43,8 @@
     "prismjs": "^1.6.0",
     "stackblur-canvas": "^1.4.0",
     "twilio": "^3.23.2",
-    "uuid": "^3.3.2",
-    "twilio-video": "^2.1.0"
+    "twilio-video": "^2.1.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "browserify": "^14.3.0",

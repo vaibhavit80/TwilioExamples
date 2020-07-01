@@ -90,7 +90,7 @@ app.get('/access', (request, response) => {
 app.get('/token', function(request, response) {
 
 
-  const { identity,deviceId } = req.query;
+  const { identity,deviceId } = request.query;
   const appName = 'F4FChat';
 
   // Create a unique ID for the client on their current device
