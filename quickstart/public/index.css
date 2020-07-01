@@ -1,0 +1,661 @@
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+.body {
+  /*background-color:#722281;*/
+  background-color:#d5d3d3;
+  /*background-image:url(images/bg_left.jpg), url(images/bg_right.jpg);*/
+  background-image:url(images/bg_alt_left.jpg), url(images/bg_alt_right.jpg);
+  background-position:left center, right center;
+  background-repeat:no-repeat, no-repeat;
+  height:100%;
+}
+
+
+
+/* The popup chat - hidden by default */
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+  min-height: 500px; 
+}
+#chat-head{
+  background-color: #81058a;
+  color: beige;
+  padding: 7px;
+  font-size: large;
+  font-weight: bold;
+}
+/* Add styles to the form container */
+.form-container {
+  max-width: 400px;
+  min-width: 300px;
+  width: 350px;
+  padding: 1px;
+  background-color: white;
+  min-height: 450px; 
+}
+
+/* Full-width textarea */
+.form-container input {
+  width: 100%;
+  padding: 15px;
+  margin: 0 0 0 0;
+  border: none;
+  background: #f1f1f1;
+  resize: none;
+}
+
+/* When the textarea gets focus, do something */
+.form-container input:focus {
+  background-color: #fff;
+  outline: none;
+}
+
+/* Set a style for the submit/send button */
+.form-container .btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+
+#messages {
+  background-color:#ebe1eb;
+  padding:10px;
+  height:100%;
+  width:348px;
+  margin:0 auto;
+  overflow-y:auto;
+  min-height:inherit;
+}
+
+#messages p {
+  margin:5px 0;
+  padding:0;
+}
+#typing-row {
+  height: 3%;
+  font-weight: lighter;
+  font-size: small;
+  color: #BBA0A1;
+  vertical-align: bottom;
+}
+#typing-placeholder {
+  height: 100%;
+  padding-left: 10px;
+}
+#messages {
+  overflow-y: scroll;
+}
+#messages.connected {
+  height: 92%;
+}
+#messages.disconnected {
+  height: 80%;
+}
+.with-shadow {
+  -webkit-box-shadow: -5px 5px 0px 0px rgba(0,0,0,0.53);
+  -moz-box-shadow: -5px 5px 0px 0px rgba(0,0,0,0.53);
+  box-shadow: -5px 5px 0px 0px rgba(0,0,0,0.53);
+}
+#channel-panel {
+  border-left: 1px solid #864035;
+  box-shadow: -1px 0px 0px 0px #5D1E18;
+}
+#channel-list {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+#channel-list.showing {
+  max-height: 75vh;
+}
+#channel-list.not-showing {
+  max-height: 80vh;
+}
+#new-channel-input {
+  background-color: #F8E6E4;
+  color: #B0ADAE;
+  border: 0;
+  resize: none;
+  height: 5vh;
+}
+#new-channel-input-row.not-showing {
+  display: none;
+}
+#new-channel-input-row.showing {
+  display: block;
+}
+.own-message {
+  background-color: #DDD3D2;
+}
+.message-info-row {
+  padding-top: 0.7vh;
+  padding-bottom: 0.5vh;
+}
+.message-body {
+  word-break: break-all;
+  text-align: justify;
+  text-justify: inter-word;
+  font-size: small;
+  font-weight: 300;
+  color: #644F52;
+}
+.message-username {
+  margin-left: 15px;
+  margin-bottom: 5px;
+  font-size: normal;
+  font-weight: 400;
+  color: #5C5153;
+}
+.message-date {
+  margin-right: 15px;
+  margin-bottom: 5px;
+  font-weight: lighter;
+  font-size: normal;
+  color: #BA9F9F;
+}
+.no-margin {
+  margin: 0;
+}
+#add-channel-image {
+  padding-left: 20px;
+  padding-top: 1.5vh;
+  padding-bottom: 1.5vh;
+  height: 5vh;
+  cursor: pointer;
+}
+.channel-element {
+  width: 100%;
+  height: 6vh;
+  margin: 0;
+  padding-left: 20px;
+  line-height: 6vh;
+  overflow: hidden;
+  font-size: large;
+}
+.unselected-channel {
+  color: #D47567;
+}
+.unselected-channel:hover {
+  background-color: #F8E6E4;
+  color: #753A35;
+  cursor: pointer;
+}
+.selected-channel {
+  background-color: #F8E6E4;
+  color: #753A35;
+}
+#logo-image {
+  height: 3vh;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+}
+#logo-column {
+  text-align: center;
+}
+.right-align {
+  text-align: right;
+  padding: 0;
+}
+.left-align {
+  text-align: left;
+  padding: 0;
+}
+#status-span {
+  color: #EE887C;
+}
+#leave-span {
+  cursor: pointer;
+  color: #370606;
+  margin-left: 1vh;
+}
+#delete-channel-span {
+  cursor: pointer;
+  color: #370606;
+}
+#status-row {
+  margin-bottom: 1vh;
+}
+#status-row.connected {
+  visibility: visible;
+}
+#status-row.disconnected {
+  visibility: hidden;
+}
+#connect-image {
+  height: 5vh;
+  margin-top: 1vh;
+  cursor: pointer;
+}
+.member-status {
+  padding: 5px;
+  font-weight: 300;
+  color: #C0A5A7;
+  text-align: center;
+  border-top: 1px solid #BCA1A3;
+  border-bottom: 1px solid #BCA1A3;
+}
+
+.info {
+  margin:5px 0;
+  font-style:italic;
+}
+
+.message-container {
+  margin:5px 0;
+  color:#fff;
+}
+
+.message-container .username {
+  display:inline-block;
+  margin-right:5px;
+  font-weight:bold;
+  color:#849091;
+}
+
+.me, .username.me {
+  font-weight:bold;
+  color:cyan;
+}
+
+.message-container .username.me {
+  display:inline-block;
+  margin-right:5px;
+}
+@media (max-width: 800px) {
+  .body {
+    background-image:url(images/bg_alt_left.jpg);
+    background-position:left center;
+    background-repeat:no-repeat;
+  }
+}
+
+nav.nav-bar {
+  /*background-color:#722281;*/
+  background-color:#d5d3d3;
+}
+
+div#room {
+  position:relative;
+  height:88%;
+}
+
+div#control-row {
+  height:10%;
+}
+
+div#room-col {
+  height:100%;
+}
+
+div#participants {
+  overflow-y: auto;
+  height: 100%;
+  margin: 0px !important;
+}
+
+div.participant {
+  background: center no-repeat url("data:image/svg+xml;utf8,<svg class='bi bi-person-fill' width='80' height='45' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 100-6 3 3 0 000 6z' clip-rule='evenodd'/></svg>");
+  border: 1px solid gray;
+  display: inline-flex;
+  position:relative;
+  /* height: 90px; */
+  /* margin: 10px 5px; */
+  /* max-width: 160px; */
+  /* width:100%; */
+  overflow: hidden;
+  background-color:black;
+}
+
+div#active-participant {
+  display:flex;
+}
+
+div.participant > video {
+  width: 100%;
+  height:100%;
+}
+
+div.participant.main {
+  height: inherit;
+  /* margin: 10px 0; */
+  max-width: 100%;
+  width: 100%;
+  border:none;
+}
+
+div.participant.main > video {
+  /* height: 720px; */
+  max-width:100%;
+}
+
+div.participant.active {
+  border: 1px solid crimson;
+  box-shadow: 0 0 5px crimson;
+}
+
+div.participant.active.pinned {
+  border: 1px solid limegreen;
+  box-shadow: 0 0 5px limegreen;
+}
+
+div.participant:hover {
+  cursor: pointer;
+}
+
+div.participant::before {
+  background-color: black;
+  color: white !important;
+  content: attr(data-identity);
+  font-size: 10px;
+  padding: 0 5px;
+  position: absolute;
+  z-index: 1000;
+}
+
+div.participant.main::before {
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+.video-overlay {
+  position: absolute;
+  width: auto;
+  height: auto;
+  right:8px;
+  /* background:none;
+  margin:0;
+  opacity:1;
+  transition: opacity .25s ease-in-out;
+  width:100%; */
+}
+
+.video-overlay:hover {
+  opacity:1;
+}
+
+.video-controls {
+  width:auto;
+  height:auto;
+  opacity:0.6;
+  padding:2px;
+  min-height:28px;
+  min-width:28px;
+}
+
+.btn-circle {
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  text-align: center;
+  padding: 0;
+  border-radius: 50% !important;
+}
+
+.btn-circle i {
+  position: relative;
+  top: -1px;
+}
+
+.btn-circle-sm {
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  font-size: 0.9rem;
+}
+
+.btn-circle-lg {
+  width: 55px;
+  height: 55px;
+  line-height: 55px;
+  font-size: 1.1rem;
+}
+
+.btn-circle-xl {
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  font-size: 1.3rem;
+}
+
+.sponsor-img {
+  height:80px;
+  max-width:100%;
+  object-fit:contain;
+}
+
+@keyframes marquee {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-100%, 0); }
+}
+
+
+@media (max-width: 576px) {
+  div#participants {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  div.participant.main > video {
+    height: 180px;
+  }
+
+}
+
+@media (max-width: 768px) {
+  div.participant.main > video {
+    height: 270px;
+  }
+}
+
+
+/**Modal confirm*/
+.modal-confirm {
+  color: #636363;
+}
+
+  .modal-confirm .modal-content {
+      padding: 20px;
+      border-radius: 5px;
+      border: none;
+      text-align: center;
+      font-size: 14px;
+  }
+
+  .modal-confirm .modal-header {
+      border-bottom: none;
+      position: relative;
+  }
+
+  .modal-confirm h4 {
+      text-align: center;
+      font-size: 26px;
+      margin: 30px 0 -10px;
+  }
+
+  .modal-confirm .close {
+      position: absolute;
+      top: -5px;
+      right: -2px;
+  }
+
+  .modal-confirm .modal-body {
+      color: #999;
+  }
+
+  .modal-confirm .modal-footer {
+      border: none;
+      text-align: center;
+      border-radius: 5px;
+      font-size: 13px;
+      padding: 10px 15px 25px;
+  }
+
+      .modal-confirm .modal-footer a {
+          color: #999;
+      }
+
+
+      .modal-confirm .icon-box i {
+          font-size: 46px;
+          display: inline-block;
+          margin-top: 13px;
+      }
+    
+
+
+@media (min-width: 992px) {
+  .modal-lg,
+  .modal-xl {
+    max-width: 800px;
+  }
+}
+
+.height-nav {
+  height: 20%;
+}
+.height-content {
+  height: 80%;
+}
+
+.btn-outline-iConnections {
+  color: #81058A!important;
+  border-color: #81058A!important;
+}
+
+  .btn-outline-iConnections:hover {
+      color: #fff !important;
+      background-color: #81058A!important;
+      border-color: #81058A!important;
+  }
+
+  
+.btn-iConnections {
+  color: #fff !important;
+  background-color: #81058A !important;
+  border-color: #A650AD !important;
+}
+
+  .btn-iConnections:hover {
+      color: #fff !important;
+      background-color: #A650AD !important;
+      border-color: #81058A !important;
+  }
+
+  .text-iConnections {
+    color: #81058A !important;
+  }
+
+  .timer {
+    position: fixed;
+    left: 1.1rem;
+    font-size: larger;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .blinking{
+    animation:blinkingText 1s infinite;
+  }
+  @keyframes blinkingText{
+    0%{     color: #f00;    }
+    49%{    color: #f00; }
+    60%{    color: transparent; }
+    99%{    color:transparent;  }
+    100%{   color: #f00;    }
+  }
+
+  .endTimerHidden{
+    visibility:hidden;
+  }
+
+  /* Container DIV - automatically generated */
+  .simply-scroll-container { 
+    position: relative;
+  }
+
+  /* Clip DIV - automatically generated */
+  .simply-scroll-clip { 
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* UL/OL/DIV - the element that simplyScroll is inited on
+  Class name automatically added to element */
+  .simply-scroll-list { 
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+    
+  .simply-scroll-list li {
+    padding: 5;
+    margin: 0;
+    list-style: none;
+  }
+    
+  .simply-scroll-list li img {
+    border: none;
+    display: block;
+  }
+
+  /* Custom class modifications - adds to / overrides above
+
+  .simply-scroll is default base class */
+
+  /* Container DIV */
+  .simply-scroll { 
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Clip DIV */
+  .simply-scroll .simply-scroll-clip {
+    width: 100%;
+    height: 100%;
+  }
+    
+  /* Explicitly set height/width of each list item */	
+  .simply-scroll .simply-scroll-list li {
+    float: left; /* Horizontal scroll only */
+    width: 200px;
+    height: 150px;
+  }
+
+  .nav-width {
+    width:25%;
+    max-width:350px;
+  }
+  .scroller-width {
+    margin-left:5px;
+    width:75%;
+  }
+
+  .copy-image {
+    height:25px;
+  }

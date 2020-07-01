@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Twilio Video QuickStart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+    <script src="https://kit.fontawesome.com/37913d168f.js" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>    
+  </head>
+  <body>
+    <div class="body">
+
+    <nav class="navbar navbar-expand-md height-nav">
+      <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+          <div class="nav-width">              
+              <img src="images/iConnections_alt_banner.png" style="height: 100%; width: 100%;" class="img-fluid" alt=""><br />
+              <button type="button" class="btn btn-sm btn-iConnections" id="btnInvite" style="margin-top: 10px; display: none;">+ INVITE COLLEAGUE</button>                                          
+              <button type="button" class="btn btn-sm btn-iConnections" id="btnChangeCamera" style="margin-top: 10px;">Change Device</button> 
+          </div>
+          <div class="scroller-width">
+            <ul id="scroller">            
+            </ul>
+          </div>
+      </div>
+  </nav>
+  <div class="content container-fluid height-content">
+      <div id="room" class="row">
+        <div id="room-col"class="col">
+          <div id="participants" class="row m-2 justify-content-center">
+          </div>
+        </div>
+      </div>
+  
+      <div class="timer text-iConnections">  </div> 
+      <input type="hidden" value="" id='meetingStartTime'>      
+      
+      <div id="control-row" class="row justify-content-center main-overlay d-none">
+        <div id="video-controls" class="d-flex flex-rowalign-items-end justify-content-center">
+          <button id="video-share" type="button" class="btn btn-secondary btn-circle btn-disabled m-1" title="Toggle camera">
+            <i class="fas fa-video"></i>
+          </button>
+          <button id="audio-share" type="button" class="btn btn-secondary btn-circle btn-disabled m-1" title="Toggle microphone">
+            <i class="fas fa-microphone"></i>
+          </button>
+          <button id="screen-share" type="button" class="btn btn-secondary btn-circle btn-disabled m-1" title="Share screen">
+            <i class="fas fa-desktop"></i>
+          </button>
+          <button id="leave-room" class="btn btn-danger btn-circle btn-disabled m-1" title="Exit room">
+            <i class="fas fa-times"></i>
+          </button>
+          <button id="chat-room" type="button" class="btn btn-secondary btn-circle btn-disabled m-1" title="Chat room">
+            <i class="fas fa-comment-alt"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <!--<div class="col-xs-12 col-sm-3 col-md-2">
+          <span class="text-white" style="opacity:0.66">
+            Proud Partners:
+          </span>
+        </div>-->
+        <div class="col-xs-12 col-md-12">         
+          <div class="row" id="sponsors">
+            
+          </div>
+        </div>
+      </div>
+      <div id="modals">
+        <div class="modal fade" id="select-mic" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="select-mic-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="select-mic-label">Microphone</h5>
+              </div>
+              <div class="modal-body" style="text-align: center">
+                <select style="width: 100%"></select>
+                <svg focusable="false" viewBox="0 0 100 100" aria-hidden="true" height="100" width="100" style="margin: 10px 0">
+                  <defs>
+                    <clipPath id="level-indicator">
+                      <rect x="0" y="100" width="100" height="100" />
+                    </clipPath>
+                  </defs>
+                  <path fill="rgb(220, 220, 220)" d="m52 38v14c0 9.757-8.242 18-18 18h-8c-9.757 0-18-8.243-18-18v-14h-8v14c0 14.094 11.906 26 26 26v14h-17v8h42v-8h-17v-14c14.094 0 26-11.906 26-26v-14h-8z"></path>
+                  <path fill="rgb(220, 220, 220)" d="m26 64h8c5.714 0 10.788-4.483 11.804-10h-11.887v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h11.887c-1.016-5.517-6.09-10-11.804-10h-8c-6.393 0-12 5.607-12 12v40c0 6.393 5.607 12 12 12z"></path>
+                  <path fill="#080" clip-path="url(#level-indicator)" d="m52 38v14c0 9.757-8.242 18-18 18h-8c-9.757 0-18-8.243-18-18v-14h-8v14c0 14.094 11.906 26 26 26v14h-17v8h42v-8h-17v-14c14.094 0 26-11.906 26-26v-14h-8z"></path>
+                  <path fill="#080" clip-path="url(#level-indicator)" d="m26 64h8c5.714 0 10.788-4.483 11.804-10h-11.887v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h12.083v-4h-12.083v-4h11.887c-1.016-5.517-6.09-10-11.804-10h-8c-6.393 0-12 5.607-12 12v40c0 6.393 5.607 12 12 12z"></path>
+                </svg>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="select-camera" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="select-camera-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="select-camera-label">Camera</h5>
+              </div>
+              <div class="modal-body" style="text-align: center">
+                <select style="width: 100%"></select>
+                <video autoplay muted playsInline style="margin: 10px 0; width: 60%"></video>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Apply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="join-room" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="join-room-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="join-room-label">Video Chat</h5>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label id="room-name-label" for="room-name">Room Name</label>
+                  <input id="room-name" class="form-control" type="text" />
+                </div>
+                <div class="form-group">
+                  <label id="screen-name-label" for="screen-name">User Name</label>
+                  <input id="screen-name" class="form-control" type="text" />
+                </div>
+                <div class="alert alert-warning" role="alert">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-dark">Change Microphone and Camera</button>
+                <button type="button" class="btn btn-primary">Join</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="show-error" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="show-error-label" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="show-error-label">Error</h5>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-warning" role="alert">
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  <div id="leaveroomconfirm" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="show-error-label" aria-hidden="true">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="icon-box text-center">
+                  <i class="fas fa-sign-out-alt text-danger"></i>
+                </div><br />
+                <p>Are you sure you want to leave this meeting?</p>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">No, Go Back</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="btnConfirmRemoveUpload">Yes, Leave Meeting</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div id="testingvideomodal" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="show-error-label" aria-hidden="true">
+    <div class="modal-dialog modal-confirm modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">                
+                
+              <div class="font-weight-bold" style="font-size: 14pt;">
+                <br>
+                <span>
+                  All meetings booked on the iConnections platform will take place directly in the system using the iConnections Video Interface. 
+                  Simply log in to the system at the time of your meeting and you will be prompted to enter your video meeting.
+                </span>
+                <br><br>
+                <span>                  
+                  If you are prompted to allow the browser to access your microphone and your camera, please allow. After allowing access, you will see a video of yourself which indicates that the system is working.  
+                  If you have any difficulties please check to make sure that you are using the Google Chrome browser's most up to date version (83.0.4103.97). 
+                  Please contact <a href="mailto: info@iconnections.io">info@iconnections.io</a> or +1-646-437-8267 for assistance.
+                </span>
+                <br /><br />
+                <a href="https://funds4food.s3.us-east-2.amazonaws.com/AV-Troubleshooting.pdf" class="" style="text-decoration: underline; font-size: 12pt;" target="_blank">iConnections Video Platform - Troubleshooting Guide</a>
+                </div>
+                <br /><br />
+                <div>
+                    <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Dismiss</button>                    
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div id="guestlinkmodal" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="show-error-label" aria-hidden="true">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-body">                
+                
+              <div class="font-weight-bold" style="font-size: 14pt;">
+                <br/>
+                Copy the link below to send to colleague. One link per invite.<br /><br />
+                <textarea rows="5" id="spMeetingLink" style="width: 100%; cursor: pointer; text-decoration: underline; color: #000;">                 
+                </textarea> 
+                <br/>                
+                <label id="copyLabel" class="text-success" style="cursor: pointer;" for="copyimage"><i class="far fa-copy"></i>&nbsp; Copy Invite Link</label>
+                <br>
+                <span id="urlCopied" class="text-success" style="display: none;">
+                    <br />
+                    URL Copied!
+                </span>           
+                </div>
+                <br />
+                <div>
+                    <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Dismiss</button>                    
+                </div>
+            </div>
+        </div>
+    </div>    
+  </div>
+
+    <div id="timerMessageModal" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="show-error-label" aria-hidden="true">
+      <div class="modal-dialog modal-confirm modal-lg">
+          <div class="modal-content">
+              <div class="modal-body">                
+                  
+                <div class="font-weight-bold" style="font-size: 14pt;">
+                  <br>
+                  <div id="timerMessageContent">                  
+                  </div>           
+                  <div id="endTimer" class="endTimerHidden">60</div>     
+                  <div>
+                      <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Dismiss</button>                    
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    </div>
+
+    <div id="meetinginthepast" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="show-error-label" aria-hidden="true">
+      <div class="modal-dialog modal-confirm">
+          <div class="modal-content">
+              <div class="modal-body">
+                  <div class="icon-box text-center">
+                    <i class="fas fa-sign-out-alt text-danger"></i>
+                  </div><br />
+                  <p>This meeting has already taken place, you will be redirected to the iConnections platform.</p>
+                  <div>                      
+                      <button type="button" class="btn btn-outline-danger btn-sm" id="btnDismissMeetingInPast">Dismiss</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="chat-popup" id="myForm">
+      <div id="chat-head">Chat <a style="float: right;color:beige;cursor: pointer;" href="javascript:void(0);" id="discon">
+            <i class="fas fa-times"></i>
+      </a>
+      </div>
+        <section class="form-container">
+          <div  id="messages"></div>
+          <div  id="typing-row">
+            <p id="typing-placeholder"></p>
+          </div>
+          <input id="chat-input" type="text" placeholder="say anything" autofocus/>
+        </section>
+        
+    </div>
+    <div id="message-template">
+      <div class="row no-margin">
+      <div class="row no-margin message-info-row" style="">
+      <div class="col-md-8 left-align"><p data-content="username" class="message-username"></p></div>
+      <div class="col-md-4 right-align"><span data-content="date" class="message-date"></span></div>
+      </div>
+      <div class="row no-margin message-content-row">
+      <div style="" class="col-md-12"><p data-content="body" class="message-body"></p></div>
+      </div>
+      </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="jquery-throttle.min.js"></script>
+     <!--<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://media.twiliocdn.com/sdk/js/chat/v3.4/twilio-chat.min.js"></script>
+    <script src="https://media.twiliocdn.com/sdk/js/common/v0.1/twilio-common.min.js"></script>
+    <script type="text/javascript" src="ez.countimer.min.js"></script> 
+ 
+    <script type="text/javascript" src="scroller.js"></script>  
+
+    <script src="index.js?tz=5"></script>    
+  </div>
+  </body>
+</html>
