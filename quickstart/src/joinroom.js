@@ -381,7 +381,7 @@ async function joinRoom(token, connectOptions) {
 
   // Handle the LocalParticipant's media.
   participantConnected(room.localParticipant, room);
-
+  connectClientWithUsername(room.localParticipant.identity, token);
   // Subscribe to the media published by RemoteParticipants already in the Room.
   room.participants.forEach(participant => {
     participantConnected(participant, room);
@@ -530,6 +530,7 @@ async function joinRoom(token, connectOptions) {
 
         
     $leave.off('click', onLeave);
+    disconnectClient();
     room.disconnect();
     window.location.href = "https://app.iconnections.io/Home/Dashboard";
 
@@ -541,14 +542,12 @@ async function joinRoom(token, connectOptions) {
   $chatroom.click(function () {
     document.getElementById("myForm").style.display = "block";
     document.getElementById("chat-input").focus();
-    debugger;
-    connectClientWithUsername(room.localParticipant.identity, token);
   });
 
   
   $discon.click(function () {
     document.getElementById("myForm").style.display = "none";
-    disconnectClient();
+    
   });
   // mute / unmute the local audio device
   $audioshare.click(() => {
@@ -733,6 +732,7 @@ function handleInputTextKeypress(event) {
     return;
   }
   if (event.keyCode === 13) {
+    debugger;
     tc.generalChannel.sendMessage($(this).val());
     event.preventDefault();
     $(this).val('');
@@ -774,13 +774,7 @@ function connectClientWithUsername(usernameText,token) {
 
 function fetchAccessToken(token, handler) {
    debugger;
-   const params = getUrlParams();
-   debugger;
-  //fetch(`https://apiprod.iconnections.io/f4f/activemeetingroomparticipants/${params.meetingguid}`)
-  $.getJSON('/token/Vaibhav', function(data) {
-       console.log(data);
-       handler(data.token);
-    });
+   handler(token);
 }
 
 function connectMessagingClient(token) {
@@ -808,7 +802,7 @@ function refreshToken() {
 }
 
 function setNewToken(token) {
-  tc.messagingClient.updateToken(tokenResponse.token);
+  tc.messagingClient.updateToken(token);
 }
 
 function updateConnectedUI() {
@@ -827,12 +821,13 @@ function updateConnectedUI() {
   }
 
   tc.messagingClient.getPublicChannelDescriptors().then(function(channels) {
-    // if (channels === undefined) {
-    //   console.log('channels is not initialized');
-    //   return;
-    // }
-    // tc.channelArray = tc.sortChannelsByName(channels.items);
-    // $channelList.text('');
+    debugger;
+    if (channels === undefined) {
+      console.log('channels is not initialized');
+      return;
+    }
+   // tc.channelArray = tc.sortChannelsByName(channels.items);
+    //$channelList.text('');
     //tc.channelArray.forEach(addChannel);
     if (typeof handler === 'function') {
       handler();
@@ -968,12 +963,28 @@ function leaveCurrentChannel() {
     return Promise.resolve();
   }
 }
+tc.getTodayDate = function(date) {
+  var today = moment();
+  var inputDate = moment(date);
+  var outputDate;
 
+  if (today.format('YYYYMMDD') == inputDate.format('YYYYMMDD')) {
+    outputDate = 'Today - ';
+  }
+  else {
+    outputDate = inputDate.format('MMM. D - ');
+  }
+  //outputDate = outputDate + inputDate.format('hh:mma');
+  outputDate = inputDate.format('hh:mma');
+  return outputDate;
+  
+}
 tc.addMessageToList = function(message) {
+  debugger;
   var rowDiv = $('<div>').addClass('row no-margin');
   rowDiv.loadTemplate($('#message-template'), {
     username: message.author,
-    date: dateFormatter.getTodayDate(message.timestamp),
+    date: tc.getTodayDate(message.timestamp),
     body: message.body
   });
   if (message.author === tc.username) {
@@ -1072,17 +1083,17 @@ function deleteCurrentChannel() {
     return;
   }
 
-  if (tc.generalChannel.sid === tc.generalChannel.sid) {
-    alert('You cannot delete the general channel');
-    return;
-  }
+  // if (tc.generalChannel.sid === tc.generalChannel.sid) {
+  //   alert('You cannot delete the general channel');
+  //   return;
+  // }
 
-  // tc.generalChannel
-  //   .delete()
-  //   .then(function(channel) {
-  //     console.log('channel: '+ channel.friendlyName + ' deleted');
-  //     setupChannel(tc.generalChannel);
-  //   });
+  tc.generalChannel
+    .delete()
+    .then(function(channel) {
+      console.log('channel: '+ channel.friendlyName + ' deleted');
+      //setupChannel(tc.generalChannel);
+    });
 }
 
 function selectChannel(event) {

@@ -108,7 +108,7 @@ async function selectAndJoinRoom(error = null) {
 
             // Add the specified video device ID to ConnectOptions.
             connectOptions.video.deviceId = { exact: deviceIds.video };
-
+            debugger;
             await joinRoom(tt.TwilioToken, connectOptions);
 
 
@@ -176,6 +176,7 @@ async function selectAndJoinRoom(error = null) {
             //var dateStart = new Date();
             //dateStart.setMinutes( dateStart.getMinutes() + 1);
             $('#meetingStartTime').val(tt.LocalStartDateTime);
+            debugger;
             await joinRoom(tt.TwilioToken, connectOptions); 
 
         })
@@ -212,7 +213,7 @@ async function selectAndJoinRoom(error = null) {
 
             // Add the specified video device ID to ConnectOptions.
             connectOptions.video.deviceId = { exact: deviceIds.video };
-
+            debugger;
             await joinRoom(tt.TwilioToken, connectOptions);
         })
         .catch((error) => {
@@ -242,7 +243,7 @@ async function selectAndJoinRoom(error = null) {
 
             // Add the specified video device ID to ConnectOptions.
             connectOptions.video.deviceId = { exact: deviceIds.video };
-
+            debugger;
             await joinRoom(tt.TwilioToken, connectOptions);
         })
         .catch((error) => {
@@ -290,7 +291,7 @@ async function selectAndJoinRoom(error = null) {
 
             // Add the specified video device ID to ConnectOptions.
             connectOptions.video.deviceId = { exact: deviceIds.video };
-
+            debugger;
             await joinRoom(tt.TwilioToken, connectOptions);
 
         })

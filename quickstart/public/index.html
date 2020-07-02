@@ -269,7 +269,7 @@
     </div>
     <div id="message-template">
       <div class="row no-margin">
-      <div class="row no-margin message-info-row" style="">
+      <div class="row no-margin message-info-row" >
       <div class="col-md-8 left-align"><p data-content="username" class="message-username"></p></div>
       <div class="col-md-4 right-align"><span data-content="date" class="message-date"></span></div>
       </div>
@@ -278,10 +278,13 @@
       </div>
       </div>
     </div>
-
+    <div id="member-notification-template">
+    <p class="member-status" data-content="status"></p>
+    </div>
     <script src="https://media.twiliocdn.com/sdk/js/chat/v3.4/twilio-chat.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="jquery-throttle.min.js"></script>
+    <script src="vendor/jquery.loadTemplate-1.4.4.min.js"></script>
      <!--<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
