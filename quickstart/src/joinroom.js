@@ -775,17 +775,11 @@ function connectClientWithUsername(usernameText,token) {
 function fetchAccessToken(token, handler) {
    debugger;
    const params = getUrlParams();
+   debugger;
   //fetch(`https://apiprod.iconnections.io/f4f/activemeetingroomparticipants/${params.meetingguid}`)
- fetch(`https://apiprod.iconnections.io/f4f/meetingcontact/${params.contactguid}/${params.meetingguid}`)
-   .then(async (response) => {
-       var tt = await response.json();
-       console.log(tt);
-       debugger;
-       tc.username = tt.MeetingParticipant;
-       handler(tt.TwilioToken);
-    })
-    .catch((error) => {
-      console.error(JSON.stringify(error));
+  $.getJSON('/token/Vaibhav', function(data) {
+       console.log(data);
+       handler(data.token);
     });
 }
 

@@ -12,8 +12,9 @@ require('dotenv').load();
 const express = require('express');
 const http = require('http');
 const path = require('path');
-const { jwt: { AccessToken } } = require('twilio');
+const Twilio = require('twilio');
 const axios = require('axios');
+const AccessToken = Twilio.jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
 const ChatGrant = AccessToken.ChatGrant;
 // Max. period that a Participant is allowed to be in a Room (currently 14400 seconds or 4 hours)
@@ -87,41 +88,76 @@ app.get('/access', (request, response) => {
  * parameter.
  */
 
-app.get('/token', function(request, response) {
+app.get('/token/:id?', function(request, response) {
 
-
-  const { identity,deviceId } = request.query;
-  const appName = 'F4FChat';
-
-  // Create a unique ID for the client on their current device
-  const endpointId = appName + ':' + identity + ':' + deviceId;
+debugger;
+  const  identity =  request.params.id || 'UnknownUser';
 
   // Create an access token which we will sign and return to the client,
   // containing the grant we just created.
   const token = new AccessToken(
     process.env.TWILIO_ACCOUNT_SID,
     process.env.TWILIO_API_KEY,
-    process.env.TWILIO_API_SECRET,
-    { ttl: MAX_ALLOWED_SESSION_DURATION }
+    process.env.TWILIO_API_SECRET
   );
 
   // Assign the generated identity to the token.
   token.identity = identity;
 
-  // Grant the access token Twilio Video capabilities.
-  const grant = new VideoGrant();
-  token.addGrant(grant);
-  const chatGrant = new ChatGrant({
-    serviceSid: process.env.TWILIO_CHAT_SERVICE_SID,
-    endpointId: endpointId,
-  });
-  token.addGrant(chatGrant);
+  // Grant the access token Twilio Video capabilities
+  const videoGrant = new VideoGrant();
+  token.addGrant(videoGrant);
+
+  if (process.env.TWILIO_CHAT_SERVICE_SID) {
+    // Create a "grant" which enables a client to use IPM as a given user,
+    // on a given device
+    const chatGrant = new ChatGrant({
+      serviceSid: process.env.TWILIO_CHAT_SERVICE_SID
+    });
+    token.addGrant(chatGrant);
+  }
   // Serialize the token to a JWT string.
-  response.send(token.toJwt());
+  response.send({
+    identity: token.identity,
+    token: token.toJwt()
+  });
 
 
 });
+app.post('/token', function(request, response) {
+  debugger;
+  const  identity =  request.body.id || 'UnknownUser';
 
+  // Create an access token which we will sign and return to the client,
+  // containing the grant we just created.
+  const token = new AccessToken(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_API_KEY,
+    process.env.TWILIO_API_SECRET
+  );
+
+  // Assign the generated identity to the token.
+  token.identity = identity;
+
+  // Grant the access token Twilio Video capabilities
+  const videoGrant = new VideoGrant();
+  token.addGrant(videoGrant);
+
+  if (process.env.TWILIO_CHAT_SERVICE_SID) {
+    // Create a "grant" which enables a client to use IPM as a given user,
+    // on a given device
+    const chatGrant = new ChatGrant({
+      serviceSid: process.env.TWILIO_CHAT_SERVICE_SID
+    });
+    token.addGrant(chatGrant);
+  }
+  // Serialize the token to a JWT string.
+  response.send({
+    identity: token.identity,
+    token: token.toJwt()
+  });
+
+});
 // Create http server and run it.
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;

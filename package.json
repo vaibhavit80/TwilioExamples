@@ -42,7 +42,7 @@
     "express": "^4.15.2",
     "prismjs": "^1.6.0",
     "stackblur-canvas": "^1.4.0",
-    "twilio": "^3.23.2",
+    "twilio": "^3.44.0",
     "twilio-video": "^2.1.0",
     "uuid": "^3.3.2"
   },
