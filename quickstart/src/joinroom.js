@@ -11,7 +11,7 @@ var tc = {};
 var GENERAL_CHANNEL_UNIQUE_NAME = 'general';
 var GENERAL_CHANNEL_NAME = 'General Channel';
 var MESSAGES_HISTORY_LIMIT = 50;
-
+var $messageList;
 var $channelList;
 var $inputText;
 var $usernameInput;
@@ -655,7 +655,7 @@ async function joinRoom(token, connectOptions) {
         window.onpagehide = null;
         document.onvisibilitychange = null;
       }
-
+disconnectClient();
       // Stop the LocalVideoTrack.
       localVideoTrack.stop();
 
@@ -700,7 +700,7 @@ async function joinRoom(token, connectOptions) {
   });
 }
 tc.init = function() {
-  tc.$messageList = $('#messages');
+  $messageList = $('#messages');
   $inputText = $('#chat-input');
   $statusRow = $('#status-row');
   $typingRow = $('#typing-row');
@@ -712,6 +712,7 @@ tc.init = function() {
   $newChannelInputRow = $('#new-channel-input-row');
   $newChannelInput = $('#new-channel-input');
   $usernameInput.focus();
+  $typingRow.hide();
   $usernameInput.on('keypress', handleUsernameInputKeypress);
   $inputText.on('keypress', handleInputTextKeypress);
   $newChannelInput.on('keypress', tc.handleNewChannelInputKeypress);
@@ -728,11 +729,12 @@ function handleUsernameInputKeypress(event) {
 }
 
 function handleInputTextKeypress(event) {
-  if (!tc.generalChannel) {
+  if (!tc.generalChannel || $(this).val() === null || $(this).val() === '' || $(this).val() === undefined) {
     return;
   }
   if (event.keyCode === 13) {
     debugger;
+    //printMessage($(this).val());
     tc.generalChannel.sendMessage($(this).val());
     event.preventDefault();
     $(this).val('');
@@ -783,10 +785,11 @@ function connectMessagingClient(token) {
   Twilio.Chat.Client.create(token).then(function(client) {
     tc.messagingClient = client;
     debugger;
-    updateConnectedUI();
-    tc.loadChannelList(tc.joinGeneralChannel);
-    tc.messagingClient.on('channelAdded', $.throttle(tc.loadChannelList));
-    tc.messagingClient.on('channelRemoved', $.throttle(tc.loadChannelList));
+   // updateConnectedUI();
+    //tc.loadChannelList(tc.joinGeneralChannel);
+    tc.joinGeneralChannel();
+    // tc.messagingClient.on('channelAdded', $.throttle(tc.loadChannelList));
+    // tc.messagingClient.on('channelRemoved', $.throttle(tc.loadChannelList));
     tc.messagingClient.on('tokenExpired', refreshToken);
   }).catch((error) => {
     debugger;
@@ -808,9 +811,9 @@ function setNewToken(token) {
 function updateConnectedUI() {
   $('#username-span').text(tc.username);
   $statusRow.addClass('connected').removeClass('disconnected');
-  tc.$messageList.addClass('connected').removeClass('disconnected');
+  $messageList.addClass('connected').removeClass('disconnected');
   $connectPanel.addClass('connected').removeClass('disconnected');
-  $inputText.addClass('with-shadow');
+ // $inputText.addClass('with-shadow');
   $typingRow.addClass('connected').removeClass('disconnected');
 }
 
@@ -842,9 +845,8 @@ tc.joinGeneralChannel = function() {
   tc.messagingClient.getChannelByUniqueName(GENERAL_CHANNEL_UNIQUE_NAME)
   .then(function(channel) {
     tc.generalChannel = channel;
-    console.log('Found general channel:');
-    console.log(tc.generalChannel);
-    setupChannel(tc.generalChannel);
+    initChannelEvents();
+    setupChannel();
   }).catch(function() {
     // If it doesn't exist, let's create it
     console.log('Creating general channel');
@@ -853,9 +855,9 @@ tc.joinGeneralChannel = function() {
       friendlyName: GENERAL_CHANNEL_NAME
     }).then(function(channel) {
       console.log('Created general channel:');
-      console.log(channel);
       tc.generalChannel = channel;
-      setupChannel(tc.generalChannel);
+      initChannelEvents();
+      setupChannel();
     }).catch(function(channel) {
       console.log('Channel could not be created:');
       console.log(channel);
@@ -883,33 +885,15 @@ function initChannel(channel) {
   return tc.messagingClient.getChannelBySid(channel.sid);
 }
 
-function joinChannel(_channel) {
-  return _channel.join()
-    .then(function(joinedChannel) {
-      console.log('Joined channel ' + joinedChannel.friendlyName);
-      updateChannelUI(_channel);
-      
-      return joinedChannel;
-    })
-    .catch(function(err) {
-      if (_channel.status == 'joined') {
-        updateChannelUI(_channel);
-        return _channel;    
-      } 
-      console.error(
-        "Couldn't join channel " + _channel.friendlyName + ' because -> ' + err
-      );
-    });
-}
 
-function initChannelEvents(currChannel) {
- 
-  console.log(currChannel.friendlyName + ' ready.');
-  currChannel.on('messageAdded', tc.addMessageToList);
-  currChannel.on('typingStarted', showTypingStarted);
-  currChannel.on('typingEnded', hideTypingStarted);
-  currChannel.on('memberJoined', notifyMemberJoined);
-  currChannel.on('memberLeft', notifyMemberLeft);
+function initChannelEvents() {
+ debugger
+  console.log(tc.generalChannel.friendlyName + ' ready.');
+  tc.generalChannel.on('messageAdded', tc.addMessageToList);
+  tc.generalChannel.on('typingStarted', tc.showTypingStarted);
+  tc.generalChannel.on('typingEnded', tc.hideTypingStarted);
+  tc.generalChannel.on('memberJoined', notifyMemberJoined);
+  tc.generalChannel.on('memberLeft', notifyMemberLeft);
   $inputText.prop('disabled', false).focus();
   
 }
@@ -929,11 +913,12 @@ function initChannelEvents(currChannel) {
 function setupChannel() {
   // Join the general channel
   tc.generalChannel.join().then(function(channel) {
-    updateChannelUI(tc.generalChannel);
-    initChannelEvents(tc.generalChannel);
+    tc.loadMessages();
+    
   }).catch(function(err) {
     if (tc.generalChannel.status == 'joined') {
-      updateChannelUI(tc.generalChannel);
+     // initChannelEvents();
+      tc.loadMessages();
       
     } 
     console.error(
@@ -954,8 +939,8 @@ function leaveCurrentChannel() {
     return tc.generalChannel.leave().then(function(leftChannel) {
       console.log('left ' + leftChannel.friendlyName);
       leftChannel.removeListener('messageAdded', tc.addMessageToList);
-      leftChannel.removeListener('typingStarted', showTypingStarted);
-      leftChannel.removeListener('typingEnded', hideTypingStarted);
+      leftChannel.removeListener('typingStarted', tc.showTypingStarted);
+      leftChannel.removeListener('typingEnded', tc.hideTypingStarted);
       leftChannel.removeListener('memberJoined', notifyMemberJoined);
       leftChannel.removeListener('memberLeft', notifyMemberLeft);
     });
@@ -981,47 +966,74 @@ tc.getTodayDate = function(date) {
 }
 tc.addMessageToList = function(message) {
   debugger;
-  var rowDiv = $('<div>').addClass('row no-margin');
-  rowDiv.loadTemplate($('#message-template'), {
-    username: message.author,
-    date: tc.getTodayDate(message.timestamp),
-    body: message.body
-  });
-  if (message.author === tc.username) {
-    rowDiv.addClass('own-message');
+  var rowDiv = "";
+   if (message.author === tc.username) {
+      rowDiv = '<li style="width:100%;">' +
+      '<div class="msj-rta macro">' +
+          '<div class="text text-r">' +
+              '<p>'+message.body+'</p>' +
+              '<p><small>'+message.author +':'+tc.getTodayDate(message.timestamp)+'</small></p>' +
+          '</div>' +
+     // '<div class="avatar" style="padding:0px 0px 0px 10px !important"><img class="img-circle" style="width:100%;" src="'+you.avatar+'" /></div>' +                                
+    '</li>';
+    
   }
-
-  tc.$messageList.append(rowDiv);
+else{
+  rowDiv = '<li style="width:100%">' +
+  '<div class="msj macro">' +
+      '<div class="text text-l">' +
+          '<p>'+ message.body +'</p>' +
+          '<p><small>'+message.author +':'+tc.getTodayDate(message.timestamp)+'</small></p>' +
+      '</div>' +
+  '</div>' +
+'</li>';
+}
+  $messageList.append(rowDiv);
   scrollToMessageListBottom();
 };
-
+function printMessage(msg){
+  var rowDiv = '<li style="width:100%;">' +
+      '<div class="msj-rta macro">' +
+          '<div class="text text-r">' +
+              '<p>'+msg+'</p>' +
+              '<p><small>'+tc.username +':'+moment().format('hh:mma')+'</small></p>' +
+          '</div>' +
+     // '<div class="avatar" style="padding:0px 0px 0px 10px !important"><img class="img-circle" style="width:100%;" src="'+you.avatar+'" /></div>' +                                
+    '</li>';
+    $messageList.append(rowDiv);
+    scrollToMessageListBottom();
+}
 function notifyMemberJoined(member) {
-  notify(member.identity + ' joined the channel')
+  notify(member.identity + ' joined')
 }
 
 function notifyMemberLeft(member) {
-  notify(member.identity + ' left the channel');
+  notify(member.identity + ' left');
 }
 
 function notify(message) {
   var row = $('<div>').addClass('col-md-12');
-  row.loadTemplate('#member-notification-template', {
+  row.loadTemplate($('.member-notification-template'), {
     status: message
   });
-  tc.$messageList.append(row);
+  $messageList.append(row);
   scrollToMessageListBottom();
 }
 
-function showTypingStarted(member) {
+tc.showTypingStarted = function(member) {
+  debugger;
+  $typingRow.show();
   $typingPlaceholder.text(member.identity + ' is typing...');
 }
 
-function hideTypingStarted(member) {
+tc.hideTypingStarted = function(member) {
+  
   $typingPlaceholder.text('');
+  $typingRow.hide();
 }
 
 function scrollToMessageListBottom() {
-  tc.$messageList.scrollTop(tc.$messageList[0].scrollHeight);
+  $messageList.scrollTop($messageList[0].scrollHeight);
 }
 
 function updateChannelUI(selectedChannel) {
@@ -1037,7 +1049,7 @@ function updateChannelUI(selectedChannel) {
   // channelElement.removeClass('unselected-channel').addClass('selected-channel');
   // tc.currentChannelContainer = channelElement;
   tc.generalChannel = selectedChannel;
-  tc.loadMessages();
+  
 }
 
 function showAddChannelInput() {
@@ -1105,16 +1117,16 @@ function selectChannel(event) {
   if (selectedChannel === tc.generalChannel) {
     return;
   }
-  setupChannel(selectedChannel);
+  setupChannel();
 };
 
 function disconnectClient() {
   leaveCurrentChannel();
   $channelList.text('');
-  tc.$messageList.text('');
-  channels = undefined;
+  $messageList.text('');
+  //channels = undefined;
   $statusRow.addClass('disconnected').removeClass('connected');
-  tc.$messageList.addClass('disconnected').removeClass('connected');
+  $messageList.addClass('disconnected').removeClass('connected');
   $connectPanel.addClass('disconnected').removeClass('connected');
   $inputText.removeClass('with-shadow');
   $typingRow.addClass('disconnected').removeClass('connected');

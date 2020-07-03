@@ -258,27 +258,21 @@
             <i class="fas fa-times"></i>
       </a>
       </div>
-        <section class="form-container">
-          <div  id="messages"></div>
+        <div class="frame">
+          <ul id="messages"></ul>
           <div  id="typing-row">
             <p id="typing-placeholder"></p>
           </div>
-          <input id="chat-input" type="text" placeholder="say anything" autofocus/>
-        </section>
+              <div style="margin:auto">                        
+                  <div class="text text-r" style="background:#81058a !important">
+                      <input id="chat-input" class="mytext" placeholder="Type a message"/>
+                  </div> 
+              </div>
+        </div>
         
     </div>
-    <div id="message-template">
-      <div class="row no-margin">
-      <div class="row no-margin message-info-row" >
-      <div class="col-md-8 left-align"><p data-content="username" class="message-username"></p></div>
-      <div class="col-md-4 right-align"><span data-content="date" class="message-date"></span></div>
-      </div>
-      <div class="row no-margin message-content-row">
-      <div style="" class="col-md-12"><p data-content="body" class="message-body"></p></div>
-      </div>
-      </div>
-    </div>
-    <div id="member-notification-template">
+
+    <div class="member-notification-template">
     <p class="member-status" data-content="status"></p>
     </div>
     <script src="https://media.twiliocdn.com/sdk/js/chat/v3.4/twilio-chat.min.js"></script>
