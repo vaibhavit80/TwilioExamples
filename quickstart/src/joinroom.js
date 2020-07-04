@@ -13,6 +13,9 @@ var GENERAL_CHANNEL_NAME = 'General Channel';
 var MESSAGES_HISTORY_LIMIT = 50;
 var $messageList;
 var $channelList;
+var showNotification = false;
+var chatOpen = false;
+var msgCont = 0;
 var $inputText;
 var $usernameInput;
 var $statusRow;
@@ -542,12 +545,19 @@ async function joinRoom(token, connectOptions) {
   $chatroom.click(function () {
     document.getElementById("myForm").style.display = "block";
     document.getElementById("chat-input").focus();
+    msgCont = 0;
+    chatOpen = true;
+    $('#msg-notification').text('');
+    $('#msg-notification').hide();
   });
 
   
   $discon.click(function () {
     document.getElementById("myForm").style.display = "none";
-    
+    msgCont = 0;
+    chatOpen = false;
+    $('#msg-notification').text('');
+    $('#msg-notification').hide();
   });
   // mute / unmute the local audio device
   $audioshare.click(() => {
@@ -838,8 +848,6 @@ function updateConnectedUI() {
   });
  }
 
-
-
 tc.joinGeneralChannel = function() {
   console.log('Attempting to join "general" chat channel...');
   tc.messagingClient.getChannelByUniqueName(GENERAL_CHANNEL_UNIQUE_NAME)
@@ -863,21 +871,6 @@ tc.joinGeneralChannel = function() {
       console.log(channel);
     });
   });
-  // if (!tc.generalChannel) {
-  //   // If it doesn't exist, let's create it
-  //   tc.messagingClient.createChannel({
-  //     uniqueName: GENERAL_CHANNEL_UNIQUE_NAME,
-  //     friendlyName: GENERAL_CHANNEL_NAME
-  //   }).then(function(channel) {
-  //     console.log('Created general channel');
-  //     tc.generalChannel = channel;
-  //     tc.loadChannelList(tc.joinGeneralChannel);
-  //   });
-  // }
-  // else {
-  //   console.log('Found general channel:');
-  //   setupChannel(tc.generalChannel);
-  // }
 };
 
 function initChannel(channel) {
@@ -897,17 +890,6 @@ function initChannelEvents() {
   $inputText.prop('disabled', false).focus();
   
 }
-
-// function setupChannel(channel) {
-//   return leaveCurrentChannel()
-//     .then(function() {
-//       return initChannel(channel);
-//     })
-//     .then(function(_channel) {
-//       return joinChannel(_channel);
-//     })
-//     .then(initChannelEvents);
-// }
 
 // Set up channel after it has been found
 function setupChannel() {
@@ -930,7 +912,10 @@ tc.loadMessages = function() {
   if(tc.generalChannel){
   tc.generalChannel.getMessages(MESSAGES_HISTORY_LIMIT).then(function (messages) {
     messages.items.forEach(tc.addMessageToList);
+    showNotification = true;
   });
+ 
+
 }
 };
 
@@ -978,18 +963,27 @@ tc.addMessageToList = function(message) {
     '</li>';
     
   }
-else{
-  rowDiv = '<li style="width:100%">' +
-  '<div class="msj macro">' +
-      '<div class="text text-l">' +
-          '<p>'+ message.body +'</p>' +
-          '<p><small>'+message.author +':'+tc.getTodayDate(message.timestamp)+'</small></p>' +
-      '</div>' +
-  '</div>' +
-'</li>';
-}
+  else{
+    rowDiv = '<li style="width:100%">' +
+    '<div class="msj macro">' +
+        '<div class="text text-l">' +
+            '<p>'+ message.body +'</p>' +
+            '<p><small>'+message.author +':'+tc.getTodayDate(message.timestamp)+'</small></p>' +
+        '</div>' +
+    '</div>' +
+  '</li>';
+  }
   $messageList.append(rowDiv);
   scrollToMessageListBottom();
+  if(showNotification && message.author !== tc.username && !chatOpen){
+    msgCont ++;
+    $('#msg-notification').show();
+    $('#msg-notification').text(msgCont);
+  }else{
+    msgCont = 0;
+    $('#msg-notification').text('');
+    $('#msg-notification').hide();
+  }
 };
 function printMessage(msg){
   var rowDiv = '<li style="width:100%;">' +
@@ -1036,21 +1030,6 @@ function scrollToMessageListBottom() {
   $messageList.scrollTop($messageList[0].scrollHeight);
 }
 
-function updateChannelUI(selectedChannel) {
-  // var channelElements = $('.channel-element').toArray();
-  // var channelElement = channelElements.filter(function(element) {
-  //   return $(element).data().sid === selectedChannel.sid;
-  // });
-  // channelElement = $(channelElement);
-  // if (tc.currentChannelContainer === undefined && selectedChannel.uniqueName === GENERAL_CHANNEL_UNIQUE_NAME) {
-  //   tc.currentChannelContainer = channelElement;
-  // }
-  // tc.currentChannelContainer.removeClass('selected-channel').addClass('unselected-channel');
-  // channelElement.removeClass('unselected-channel').addClass('selected-channel');
-  // tc.currentChannelContainer = channelElement;
-  tc.generalChannel = selectedChannel;
-  
-}
 
 function showAddChannelInput() {
   if (tc.messagingClient) {
@@ -1122,9 +1101,10 @@ function selectChannel(event) {
 
 function disconnectClient() {
   leaveCurrentChannel();
+  //deleteCurrentChannel();
+  tc.generalChannel.status == 'left';
   $channelList.text('');
   $messageList.text('');
-  //channels = undefined;
   $statusRow.addClass('disconnected').removeClass('connected');
   $messageList.addClass('disconnected').removeClass('connected');
   $connectPanel.addClass('disconnected').removeClass('connected');
